@@ -58,7 +58,7 @@ var skillInitCmd = &cobra.Command{
 }
 
 func init() {
-	skillInitCmd.Flags().BoolVar(&flagSkillGlobal, "global", false, "安装到用户级目录 ~/.agents/skills/tapd/（对所有项目生效）")
+	skillInitCmd.Flags().BoolVar(&flagSkillGlobal, "global", false, "安装到用户级目录 ~/.agents/skills/tapd/，对所有项目生效")
 	skillCmd.AddCommand(skillInitCmd)
 	rootCmd.AddCommand(skillCmd)
 }
