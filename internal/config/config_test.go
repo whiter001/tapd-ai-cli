@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/studyzy/tapd-ai-cli/internal/config"
+	"github.com/whiter001/tapd-ai-cli/internal/config"
 )
 
 // writeConfigFile 将 Config 写入指定路径的 JSON 文件

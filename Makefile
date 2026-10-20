@@ -1,8 +1,8 @@
-.PHONY: build build-cross test test-integration test-coverage lint coverage clean fmt install tools
+.PHONY: build build-cross test test-integration test-coverage lint coverage clean fmt install tools sync-upstream sync-status
 
 BINARY_NAME=tapd
 VERSION=$(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
-LDFLAGS=-ldflags "-X github.com/studyzy/tapd-ai-cli/internal/cmd.Version=$(VERSION)"
+LDFLAGS=-ldflags "-X github.com/whiter001/tapd-ai-cli/internal/cmd.Version=$(VERSION)"
 
 build:
 	go build $(LDFLAGS) -o $(BINARY_NAME) ./cmd/tapd/
@@ -46,6 +46,20 @@ tools:
 
 install:
 	go install $(LDFLAGS) ./cmd/tapd/
+
+# 同步上游（studyzy/tapd-ai-cli）main 分支的更新到当前分支
+sync-upstream:
+	git fetch upstream --prune
+	git merge --no-edit upstream/main
+	@# 上游新增的 .go 文件仍带旧 module path，统一改写为本仓库路径
+	git ls-files '*.go' | xargs sed -i 's|github.com/studyzy/tapd-ai-cli|github.com/whiter001/tapd-ai-cli|g'
+	@echo "Sync done. Run 'make test' then push."
+
+# 查看当前分支相对上游的领先/落后提交数
+sync-status:
+	@git fetch upstream --prune -q
+	@echo -n "behind (upstream only): "; git rev-list --left-right --count upstream/main...main | cut -f1
+	@echo -n "ahead  (local only):    "; git rev-list --left-right --count upstream/main...main | cut -f2
 
 clean:
 	rm -f $(BINARY_NAME) $(BINARY_NAME)-* coverage.out

@@ -6,7 +6,7 @@
 
 ### 方式一：直接下载二进制（推荐，无需 Go 环境）
 
-从 [Releases](https://github.com/studyzy/tapd-ai-cli/releases) 下载对应平台的预编译包，或复制以下脚本一键安装：
+从 [Releases](https://github.com/whiter001/tapd-ai-cli/releases) 下载对应平台的预编译包，或复制以下脚本一键安装：
 
 **Linux / macOS**
 
@@ -14,8 +14,8 @@
 # 自动检测系统与架构，下载并安装到 /usr/local/bin
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-VER=$(curl -s https://api.github.com/repos/studyzy/tapd-ai-cli/releases/latest | grep tag_name | cut -d '"' -f 4)
-curl -sSLo /tmp/tapd.tar.gz "https://github.com/studyzy/tapd-ai-cli/releases/download/${VER}/tapd_${VER}_${OS}_${ARCH}.tar.gz"
+VER=$(curl -s https://api.github.com/repos/whiter001/tapd-ai-cli/releases/latest | grep tag_name | cut -d '"' -f 4)
+curl -sSLo /tmp/tapd.tar.gz "https://github.com/whiter001/tapd-ai-cli/releases/download/${VER}/tapd_${VER}_${OS}_${ARCH}.tar.gz"
 sudo tar xzf /tmp/tapd.tar.gz -C /usr/local/bin tapd && rm /tmp/tapd.tar.gz
 ```
 
@@ -23,9 +23,9 @@ sudo tar xzf /tmp/tapd.tar.gz -C /usr/local/bin tapd && rm /tmp/tapd.tar.gz
 
 ```powershell
 # 下载 zip 并解压到当前目录
-$ver = (Invoke-RestMethod https://api.github.com/repos/studyzy/tapd-ai-cli/releases/latest).tag_name
+$ver = (Invoke-RestMethod https://api.github.com/repos/whiter001/tapd-ai-cli/releases/latest).tag_name
 $arch = if ([Environment]::Is64BitOperatingSystem) { "amd64" } else { "386" }
-Invoke-WebRequest -Uri "https://github.com/studyzy/tapd-ai-cli/releases/download/$ver/tapd_${ver}_windows_${arch}.zip" -OutFile tapd.zip
+Invoke-WebRequest -Uri "https://github.com/whiter001/tapd-ai-cli/releases/download/$ver/tapd_${ver}_windows_${arch}.zip" -OutFile tapd.zip
 Expand-Archive tapd.zip -DestinationPath . ; Remove-Item tapd.zip
 ```
 
@@ -34,13 +34,13 @@ Expand-Archive tapd.zip -DestinationPath . ; Remove-Item tapd.zip
 ### 方式二：go install
 
 ```bash
-go install github.com/studyzy/tapd-ai-cli/cmd/tapd@latest
+go install github.com/whiter001/tapd-ai-cli/cmd/tapd@latest
 ```
 
 ### 方式三：从源码构建并安装
 
 ```bash
-git clone git@github.com:studyzy/tapd-ai-cli.git
+git clone git@github.com:whiter001/tapd-ai-cli.git
 cd tapd-ai-cli
 make install   # 编译并安装到 $GOPATH/bin
 ```

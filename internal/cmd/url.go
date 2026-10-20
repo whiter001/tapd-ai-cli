@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/studyzy/tapd-ai-cli/internal/output"
+	"github.com/whiter001/tapd-ai-cli/internal/output"
 )
 
 // urlCmd 是根据 TAPD URL 查询条目详情的命令

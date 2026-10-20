@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/studyzy/tapd-ai-cli/internal/output"
 	"github.com/studyzy/tapd-sdk-go/model"
+	"github.com/whiter001/tapd-ai-cli/internal/output"
 )
 
 func TestPrintJSON_Compact(t *testing.T) {

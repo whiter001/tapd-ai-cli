@@ -139,7 +139,7 @@ CLI 层负责：读取配置文件 → 创建 SDK 客户端 → 调用 SDK 方�
 // internal/cmd/root.go（示意）
 import (
     tapd "github.com/studyzy/tapd-sdk-go"
-    "github.com/studyzy/tapd-ai-cli/internal/config"
+    "github.com/whiter001/tapd-ai-cli/internal/config"
 )
 
 func newClient() *tapd.Client {

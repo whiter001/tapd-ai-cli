@@ -21,7 +21,7 @@ builds:
       - arm64
     ldflags:
       - -s -w
-      - -X github.com/studyzy/tapd-ai-cli/internal/cmd.Version={{ .Version }}
+      - -X github.com/whiter001/tapd-ai-cli/internal/cmd.Version={{ .Version }}
 
 archives:
   - id: default

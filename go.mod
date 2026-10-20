@@ -1,4 +1,4 @@
-module github.com/studyzy/tapd-ai-cli
+module github.com/whiter001/tapd-ai-cli
 
 go 1.24.12
 

@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/studyzy/tapd-ai-cli/internal/output"
+	"github.com/whiter001/tapd-ai-cli/internal/output"
 )
 
 var (

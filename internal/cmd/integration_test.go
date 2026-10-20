@@ -12,9 +12,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/studyzy/tapd-ai-cli/internal/config"
 	tapd "github.com/studyzy/tapd-sdk-go"
 	"github.com/studyzy/tapd-sdk-go/model"
+	"github.com/whiter001/tapd-ai-cli/internal/config"
 )
 
 // skipIfNoCredentials 检查环境变量，若无凭据则跳过测试

@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/studyzy/tapd-ai-cli/internal/output"
+	"github.com/whiter001/tapd-ai-cli/internal/output"
 )
 
 //go:embed skill_template.md

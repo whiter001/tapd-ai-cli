@@ -8,7 +8,7 @@ description: TAPD操作，涉及需求，缺陷，任务，Wiki等。tapd.cn快�
 ## 安装
 
 ```bash
-go install github.com/studyzy/tapd-ai-cli/cmd/tapd@latest
+go install github.com/whiter001/tapd-ai-cli/cmd/tapd@latest
 ```
 
 ## 认证

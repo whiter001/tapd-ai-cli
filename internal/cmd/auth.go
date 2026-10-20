@@ -6,10 +6,10 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/studyzy/tapd-ai-cli/internal/config"
-	"github.com/studyzy/tapd-ai-cli/internal/output"
 	tapd "github.com/studyzy/tapd-sdk-go"
 	"github.com/studyzy/tapd-sdk-go/model"
+	"github.com/whiter001/tapd-ai-cli/internal/config"
+	"github.com/whiter001/tapd-ai-cli/internal/output"
 )
 
 var flagLocal bool

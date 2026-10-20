@@ -44,6 +44,21 @@ make tools          # go install goimports
 make clean
 ```
 
+### 与上游的关系
+
+本仓库是 [studyzy/tapd-ai-cli](https://github.com/studyzy/tapd-ai-cli) 的 fork，独立开发、**不回传上游**，但定期接收上游更新。
+
+- `origin` → `whiter001/tapd-ai-cli`（本仓库，推送目标）
+- `upstream` → `studyzy/tapd-ai-cli`（只读，不推送）
+- Go module path 已独立为 `github.com/whiter001/tapd-ai-cli`；SDK 依赖仍是上游的 `github.com/studyzy/tapd-sdk-go`
+
+```bash
+make sync-status     # 查看相对上游的领先/落后提交数
+make sync-upstream   # fetch + merge upstream/main + 修正上游新增文件的 module path
+```
+
+合并上游后必须 `make test` 验证再推送。上游 tag 被收进 `refs/upstream-tags/*`（不占用本地 `refs/tags/*`），本仓库自有发布 tag 不会与上游冲突。
+
 ## 架构
 
 ### 目录结构
