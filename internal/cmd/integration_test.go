@@ -283,16 +283,22 @@ func TestIntegration_HelpOutputValid(t *testing.T) {
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
+	// 必须并发读取管道：Windows 的 os.Pipe 默认缓冲仅 4KB，
+	// 写满后写入阻塞，而读取又发生在写入之后，会造成死锁。
+	readDone := make(chan string, 1)
+	go func() {
+		var buf bytes.Buffer
+		buf.ReadFrom(r)
+		readDone <- buf.String()
+	}()
+
 	coreLines, advancedLines := buildSpecLines(rootCmd)
 	printSpecOutput(os.Stdout, rootCmd, coreLines, advancedLines)
 
 	w.Close()
 	os.Stdout = old
 
-	var buf bytes.Buffer
-	buf.ReadFrom(r)
-
-	output := buf.String()
+	output := <-readDone
 	if output == "" {
 		t.Fatal("help output is empty")
 	}

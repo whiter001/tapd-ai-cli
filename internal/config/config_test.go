@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/whiter001/tapd-ai-cli/internal/config"
@@ -181,14 +182,16 @@ func TestSaveConfig(t *testing.T) {
 		t.Errorf("unexpected config content: %+v", loaded)
 	}
 
-	// 验证文件权限
-	info, err := os.Stat(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	perm := info.Mode().Perm()
-	if perm != 0600 {
-		t.Errorf("expected permission 0600, got %04o", perm)
+	// 验证文件权限（Windows 无 POSIX 权限位，os.Chmod 仅能切换只读属性，跳过校验）
+	if runtime.GOOS != "windows" {
+		info, err := os.Stat(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		perm := info.Mode().Perm()
+		if perm != 0600 {
+			t.Errorf("expected permission 0600, got %04o", perm)
+		}
 	}
 }
 
