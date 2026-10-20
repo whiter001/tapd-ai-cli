@@ -101,7 +101,7 @@ tapd
 ├── workflow  transitions | status-map | last-steps
 ├── relation  bugs | create
 ├── url       <tapd-url>
-├── skill     init
+├── skill     init [--global]
 └── ...       release, attachment, category, custom-field, label, module, user, report 等
 
 全局标志：--workspace-id <id>, --json, --pretty, --no-comments

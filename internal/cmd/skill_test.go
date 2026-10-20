@@ -88,6 +88,43 @@ func TestDetectExistingToolsEmpty(t *testing.T) {
 	}
 }
 
+func TestSupportedToolsIncludeKimiCode(t *testing.T) {
+	found := false
+	for _, tool := range supportedTools {
+		if tool.Dir == ".kimi-code" {
+			found = true
+			if tool.Name != "Kimi Code" {
+				t.Errorf("tool name = %q, want %q", tool.Name, "Kimi Code")
+			}
+		}
+	}
+	if !found {
+		t.Error("expected .kimi-code in supported tools")
+	}
+}
+
+func TestDetectExistingToolsKimiCode(t *testing.T) {
+	tmpDir := t.TempDir()
+	if err := os.Mkdir(filepath.Join(tmpDir, ".kimi-code"), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	idx := -1
+	for i, tool := range supportedTools {
+		if tool.Dir == ".kimi-code" {
+			idx = i
+		}
+	}
+	if idx < 0 {
+		t.Fatal("expected .kimi-code in supported tools")
+	}
+
+	selected := detectExistingTools(tmpDir)
+	if !selected[idx] {
+		t.Error("expected .kimi-code to be detected")
+	}
+}
+
 func TestGenerateSkillContent(t *testing.T) {
 	content := generateSkillContent(rootCmd)
 
@@ -172,7 +209,9 @@ func TestRunInteractiveSelectConfirm(t *testing.T) {
 	devNull, _ := os.Open(os.DevNull)
 	defer devNull.Close()
 
-	selected := []bool{true, true, false, false, false, false, false, false, false, false}
+	selected := make([]bool, len(supportedTools))
+	selected[0] = true
+	selected[1] = true
 	result, cancelled := runInteractiveSelect(r, devNull, selected)
 
 	if cancelled {
@@ -194,7 +233,8 @@ func TestRunInteractiveSelectCancel(t *testing.T) {
 	devNull, _ := os.Open(os.DevNull)
 	defer devNull.Close()
 
-	selected := []bool{true, false, false, false, false, false, false, false, false, false}
+	selected := make([]bool, len(supportedTools))
+	selected[0] = true
 	_, cancelled := runInteractiveSelect(r, devNull, selected)
 
 	if !cancelled {
@@ -220,5 +260,65 @@ func TestRunInteractiveSelectAll(t *testing.T) {
 		if !s {
 			t.Errorf("expected tool %d to be selected after 'a'", i)
 		}
+	}
+}
+
+func TestInstallGlobalSkill(t *testing.T) {
+	tmpDir := t.TempDir()
+	content := []byte("global skill content")
+
+	path, err := installGlobalSkill(tmpDir, content)
+	if err != nil {
+		t.Fatalf("installGlobalSkill failed: %v", err)
+	}
+
+	expected := filepath.Join(tmpDir, ".agents", "skills", "tapd", "SKILL.md")
+	if path != expected {
+		t.Errorf("path = %q, want %q", path, expected)
+	}
+
+	got, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("failed to read written file: %v", err)
+	}
+	if string(got) != "global skill content" {
+		t.Errorf("file content = %q, want %q", string(got), "global skill content")
+	}
+}
+
+func TestSkillInitGlobalFlag(t *testing.T) {
+	flag := skillInitCmd.Flags().Lookup("global")
+	if flag == nil {
+		t.Fatal("expected --global flag registered on skill init")
+	}
+	if flag.DefValue != "false" {
+		t.Errorf("default value = %q, want %q", flag.DefValue, "false")
+	}
+}
+
+func TestRunSkillInitGlobal(t *testing.T) {
+	tmpHome := t.TempDir()
+	// os.UserHomeDir 在 Windows 读 USERPROFILE，在 Unix 读 HOME
+	t.Setenv("USERPROFILE", tmpHome)
+	t.Setenv("HOME", tmpHome)
+
+	old := flagSkillGlobal
+	flagSkillGlobal = true
+	defer func() { flagSkillGlobal = old }()
+
+	if err := runSkillInitGlobal(); err != nil {
+		t.Fatalf("runSkillInitGlobal failed: %v", err)
+	}
+
+	path := filepath.Join(tmpHome, ".agents", "skills", "tapd", "SKILL.md")
+	got, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("expected global skill file at %s: %v", path, err)
+	}
+	if !strings.Contains(string(got), "name: tapd") {
+		t.Error("global skill file should contain skill name")
+	}
+	if strings.Contains(string(got), "{{COMMAND_REFERENCE}}") {
+		t.Error("global skill file should not contain unreplaced placeholder")
 	}
 }

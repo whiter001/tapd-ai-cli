@@ -194,9 +194,22 @@ tapd
 tapd skill init
 ```
 
-支持的工具：Claude Code、CodeBuddy、Cursor、Windsurf、Trae、Codex、Gemini CLI、Cline、Roo Code、Augment。
+支持的工具：Claude Code、CodeBuddy、Cursor、Windsurf、Trae、Codex、Gemini CLI、Cline、Roo Code、Augment、Kimi Code。
 
 命令会自动检测当前目录下已有的工具配置文件夹并默认选中，交互式确认后生成 SKILL.md。生成的命令参考部分从当前 CLI 版本的命令树动态生成，始终保持同步。
+
+### 安装到用户级目录（全局生效）
+
+加 `--global` 可跳过交互，直接安装到用户级的 `.agents` 标准目录，对**所有项目**生效：
+
+```bash
+tapd skill init --global
+# → ~/.agents/skills/tapd/SKILL.md
+```
+
+`.agents` 是跨工具通用的用户级 skill 位置，Claude Code、Codex、Kimi Code 等遵循该约定的工具均可直接加载。安装后需重启或重新加载 AI 工具才会生效。
+
+> 两种安装范围的区别：默认安装到**当前目录**的 `<工具目录>/skills/tapd/`，仅对该项目生效；`--global` 安装到**用户主目录**，对所有项目生效。
 
 ## 全局标志
 

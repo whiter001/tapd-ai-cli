@@ -34,7 +34,14 @@ var supportedTools = []aiTool{
 	{Name: "Cline", Dir: ".cline"},
 	{Name: "Roo Code", Dir: ".roo"},
 	{Name: "Augment", Dir: ".augment"},
+	{Name: "Kimi Code", Dir: ".kimi-code"},
 }
+
+// globalSkillDir 是用户级 skill 目录名，遵循跨工具通用的 .agents 标准
+const globalSkillDir = ".agents"
+
+// flagSkillGlobal 控制是否安装到用户级目录
+var flagSkillGlobal bool
 
 // skillCmd 是 skill 父命令
 var skillCmd = &cobra.Command{
@@ -46,17 +53,22 @@ var skillCmd = &cobra.Command{
 var skillInitCmd = &cobra.Command{
 	Use:   "init",
 	Short: "为 AI Coding 工具生成 TAPD CLI 的 SKILL.md",
-	Long:  "扫描当前目录，交互式选择 AI Coding 工具，为选中的工具生成 TAPD CLI 的 SKILL.md 指令文件。",
+	Long:  "扫描当前目录，交互式选择 AI Coding 工具，为选中的工具生成 TAPD CLI 的 SKILL.md 指令文件。使用 --global 改为安装到用户级目录 ~/.agents/skills/tapd/，对所有项目生效。",
 	RunE:  runSkillInit,
 }
 
 func init() {
+	skillInitCmd.Flags().BoolVar(&flagSkillGlobal, "global", false, "安装到用户级目录 ~/.agents/skills/tapd/（对所有项目生效）")
 	skillCmd.AddCommand(skillInitCmd)
 	rootCmd.AddCommand(skillCmd)
 }
 
 // runSkillInit 执行 skill init 的主流程
 func runSkillInit(cmd *cobra.Command, args []string) error {
+	if flagSkillGlobal {
+		return runSkillInitGlobal()
+	}
+
 	cwd, err := os.Getwd()
 	if err != nil {
 		output.PrintError(os.Stderr, "skill_init_error",
@@ -111,6 +123,37 @@ func runSkillInit(cmd *cobra.Command, args []string) error {
 		fmt.Fprintf(os.Stderr, "  %s\n", p)
 	}
 	return nil
+}
+
+// runSkillInitGlobal 将 SKILL.md 安装到用户级目录 ~/.agents/skills/tapd/
+// .agents 是跨工具通用的用户级 skill 位置，因此无需交互式选择工具
+func runSkillInitGlobal() error {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		output.PrintError(os.Stderr, "skill_init_error",
+			"Failed to resolve home directory: "+err.Error(),
+			"Set HOME (Unix) or USERPROFILE (Windows) to a valid path.")
+		os.Exit(output.ExitAPIError)
+		return nil
+	}
+
+	path, err := installGlobalSkill(home, []byte(generateSkillContent(rootCmd)))
+	if err != nil {
+		output.PrintError(os.Stderr, "skill_init_error",
+			fmt.Sprintf("Failed to write %s: %s", path, err.Error()),
+			"Check file system permissions.")
+		os.Exit(output.ExitAPIError)
+		return nil
+	}
+
+	fmt.Fprintf(os.Stderr, "已安装全局 TAPD skill：\n  %s\n", path)
+	fmt.Fprintf(os.Stderr, "该 skill 对所有项目生效，AI 工具需重启或重新加载后生效。\n")
+	return nil
+}
+
+// installGlobalSkill 将 SKILL.md 写入 baseDir 下的 .agents/skills/tapd/
+func installGlobalSkill(baseDir string, content []byte) (string, error) {
+	return writeSkillFile(baseDir, globalSkillDir, content)
 }
 
 // detectExistingTools 检测当前目录下已存在的 AI Coding 工具配置目录
