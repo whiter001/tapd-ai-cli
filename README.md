@@ -14,8 +14,10 @@
 # 自动检测系统与架构，下载并安装到 /usr/local/bin
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-VER=$(curl -s https://api.github.com/repos/whiter001/tapd-ai-cli/releases/latest | grep tag_name | cut -d '"' -f 4)
-curl -sSLo /tmp/tapd.tar.gz "https://github.com/whiter001/tapd-ai-cli/releases/download/${VER}/tapd_${VER}_${OS}_${ARCH}.tar.gz"
+# TAG 含 v 前缀用于下载路径，VER 不含 v 用于匹配归档文件名
+TAG=$(curl -s https://api.github.com/repos/whiter001/tapd-ai-cli/releases/latest | grep tag_name | cut -d '"' -f 4)
+VER=${TAG#v}
+curl -sSLo /tmp/tapd.tar.gz "https://github.com/whiter001/tapd-ai-cli/releases/download/${TAG}/tapd_${VER}_${OS}_${ARCH}.tar.gz"
 sudo tar xzf /tmp/tapd.tar.gz -C /usr/local/bin tapd && rm /tmp/tapd.tar.gz
 ```
 
@@ -23,9 +25,14 @@ sudo tar xzf /tmp/tapd.tar.gz -C /usr/local/bin tapd && rm /tmp/tapd.tar.gz
 
 ```powershell
 # 下载 zip 并解压到当前目录
-$ver = (Invoke-RestMethod https://api.github.com/repos/whiter001/tapd-ai-cli/releases/latest).tag_name
-$arch = if ([Environment]::Is64BitOperatingSystem) { "amd64" } else { "386" }
-Invoke-WebRequest -Uri "https://github.com/whiter001/tapd-ai-cli/releases/download/$ver/tapd_${ver}_windows_${arch}.zip" -OutFile tapd.zip
+$tag = (Invoke-RestMethod https://api.github.com/repos/whiter001/tapd-ai-cli/releases/latest).tag_name
+$ver = $tag -replace '^v',''
+$arch = switch ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) {
+  "X64"   { "amd64" }
+  "Arm64" { "arm64" }
+  default { "amd64" }
+}
+Invoke-WebRequest -Uri "https://github.com/whiter001/tapd-ai-cli/releases/download/$tag/tapd_${ver}_windows_${arch}.zip" -OutFile tapd.zip
 Expand-Archive tapd.zip -DestinationPath . ; Remove-Item tapd.zip
 ```
 
